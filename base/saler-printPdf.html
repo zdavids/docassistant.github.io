@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>打印售后单</title>
+	<link rel="stylesheet" href="http://static.ennew.dev/static/base/css/base_orange.css">
+	<script src="http://static.ennew.dev/static/base/js/jquery.js"></script>
+	<script src="http://static.ennew.dev/static/base/js/public.js"></script>
+	<script src="http://static.ennew.dev/static/base/js/docassistant.js"></script>
+	<script type="text/javascript" src="../reqConfig.js"></script>
+	<script type="text/javascript" src="./tooljs/printPage.js"></script>
+	<!--     <script type="text/javascript" src="../../../../plugin/page/script/jquery.page.js"></script> -->
+    <style media="print">
+        .mainhd {display:none}
+        .printTit {display:none}
+        /*.ep-pup {display:none}*/
+        .ep-print {display:none}
+        .clonePrintContent {display:block}
+
+		/*外层框架*/
+		.public-top-layout{
+			display:none;
+		}
+		.ncsc-head-layout{
+			display:none;
+		}
+		.ncsc-layout-left{
+			display: none;
+		}
+		.ncsc-path{
+			display: none;
+		}
+		.nc-appbar-tabs{
+			display:none;
+		}
+		#faq{
+			display: none;
+		}
+    </style>
+    <script>
+		var applyId=1694;
+    	$(function(){
+			var jsonParamData={
+				"applyId":applyId
+			}
+			getAjaxResult("/salesManage/purchaser/printDataToPdf", "POST", JSON.stringify(jsonParamData), "setValueDesc(data)")
+			printFunc();
+			$('#printOrder').bind('click',function (){
+				window.print();
+			});
+
+
+		})
+		function setValueDesc(data)
+		{
+			var data={"status":"1","msg":"OK","results":{"applyNo":"517120900001","applyTime":"2017-12-09 09:54:50","serviceType":2,"serviceTypeStr":"换货","refundTotalMoney":"46.000","serviceReason":2,"serviceReasonStr":null,"serviceReasonDetailDesc":"非质量问题 项目物料型号改变 ","applyStatus":4,"applyStatusStr":"待审核","sellerType":2,"orderType":1,"buyerName":"测试1001","sellerName":"阳光易购1004","deliverAddress":null,"consigner":null,"consignerPhone":null,"receiveAddress":null,"consignee":null,"consigneePhone":null,"supermarketName":null,"supermarketArea":null,"remark":"撒大声地所多","qualityType":null,"dealConclusion":null,"companyName":"测试1001","accountsSettlor":"新奥（中国）燃气投资有限公司","userType":false,"goodsReports":[{"materialId":"2001119","materialName":"钢制三通 钢制异径三通_Sch10_系列Ⅱ_L290_个_GB/T12459_DN8","unit":"个","serviceCount":"2.000","orderSn":"90000024367677","supplier":"阳光易购1004","goodsRealPrice":"23.00","refundMoney":"46.00","serviceValidDate":"2019/10/13"},{"materialId":"2001119","materialName":"钢制三通 钢制异径三通_Sch10_系列Ⅱ_L290_个_GB/T12459_DN8","unit":"个","serviceCount":"2.000","orderSn":"90000024367677","supplier":"阳光易购1004","goodsRealPrice":"23.00","refundMoney":"46.00","serviceValidDate":"2019/10/13"}]},"url":null,"ids":null,"successful":true}
+			var jsonData=JSON.parse(data).results;
+			setValue4Desc(jsonData,$(".en-printOrder")[0]);
+			for(var nI=0;nI<jsonData.goodsReports.length;nI++){
+				var jsonItem=jsonData.goodsReports[nI];
+				var cloneList=$("#templateRow").clone(true);
+				cloneList.addClass("clonerow");
+				cloneList.jsonData = jsonItem;
+				cloneList.jsonData.idx=nI+1
+				cloneList.show();
+				cloneList.find("#rowIdx").text(cloneList.jsonData.idx)
+				$("#printMainTab ").append(cloneList);
+				setValue4Desc(jsonItem,cloneList);
+			}
+		}
+
+		function clsStandardTableCtrl$before() {
+			var data={
+				"applyId":applyId
+			}
+			$("#printMainTab").attr("reqParam",JSON.stringify(data));
+		}
+
+		function printFunc()
+		{
+			var obj = new clsPrint();
+			obj.ctrl= document.getElementById("templatePrintContent");
+			obj.nH	= 650;
+			//obj.nPageH = 600;
+			obj.init();
+
+		}
+    </script>
+</head>
+<body>
+<div class="container bigPrint">
+	<div class="en-printOrder">
+		<div class="printTit">
+			<img src="http://localhost:8051/static/purchaser/saleAfter/images/logo.png" alt="" style="width:117px;height: 30px;float: left ">
+			<span class="company">售后单：<span id="applyNo"></span></span>
+			<div class="sellDetail">
+				<p>申请时间：<span style="color: #000;font-size: 18px" id="applyTime"></span></p>
+				<p>售后单号：<span id="applyNo"> </span></p>
+			</div>
+
+		</div>
+	    <div class="ep-pup" id="templatePrintContent" printtype="1" datarowid="cloneRow">
+
+		    <div class="ep-ListInfo" id="templateTitleContent">
+			    <div class="culom1">
+			        <p><span class="name">售后类型：</span><span class="data" id="serviceTypeStr"></span>
+						<span>退货总额：<i id="refundTotalMoney"></i></span>
+					</p>
+			        <p><span class="name">结算商：</span><span class="data">新奥（中国燃气投资有限公司）</span></p>
+			        <p><span class="name">供应商：</span><span class="data" style="width: 200px" id="sellerName">.</span></p>
+			    </div>
+				<div class="culom1">
+					<p><span class="name">售后原因：</span><span class="data" id="serviceReasonDetailDesc"></span></p>
+					<p><span class="name">发货地址：</span><span class="data" id="accountsSettlor">	</span></p>
+					<p><span class="name">收货地址：</span><span class="data" style="width: 200px"></span></p>
+
+				</div>
+				<div class="culom1">
+					<p><span class="name">售后状态：</span><span class="data" id="applyStatusStr"></span></p>
+
+				</div>
+		    </div>	
+		    <div id="templateBodyContent">
+		    <table id="printMainTab" class="ep-main main-table" style="" idx="listNum" comtype="" -page="tcdPageCode"
+		        >
+		        <tr>
+		            <th  style="width: 7%">序号</th>
+		            <th  style="width: 10%">平台物料编码  </th>
+		            <th  style="width: 20%;">物料</th>
+		            <th  style="width: 8%;">单位 </th>
+		            <th  style="text-align: center;width: 10%">本次售后数量</th>
+		            <th  style="width: 15%"> 涉及订单</th>
+					<th  style="width: 10%;">交易单价(元) </th>
+					<th  style="text-align: center;width: 10%">退款金额(元)</th>
+					<th  style="width: 10%"> 售后有效期</th>
+		        </tr>
+		        <tbody class="tbody">
+		        <tr id="templateRow" style="display: none">
+					<td  style="width: 7%" id="rowIdx"></td>
+					<td  style="width: 10%" id="orderSn">20000213  </td>
+					<td  style="width: 20%;" id="materialName">表接头_DN15_M30*2_可锻铸铁_直管</td>
+					<td  style="width: 8%;;" id="unit">单位 </td>
+					<td  style="text-align: center;width: 10%" id="serviceCount">本次售后数量</td>
+					<td  style="text-align: right;width: 15%"> 99012910223728321</td>
+					<td  style="width: 10%;text-align:right;padding-right: 10px" id="goodsRealPrice">200.00 </td>
+					<td  style="text-align:right;padding-right: 10px;width: 10%" id="refundMoney">200.00</td>
+					<td  style="width: 10%" id="serviceValidDate"> 2018/10/18</td>
+		        </tr>
+
+
+		        </tbody>
+		    </table>
+				<div class="sellremark">
+					<p style="font-weight: bold">售后备注：</p>
+					<p class="sellremark-text" id="remark"></p>
+				</div>
+				<p style="font-weight: bold;margin-top: 40px">质量处理结果</p>
+				<div class="sellProblem">
+					<span style="font-weight: bold">质量问题类型：</span>
+					<span class="sellProblem-text" id="qualityType">一般质量问题</span>
+				</div>
+				<div class="sellconclusion">
+					<span style="font-weight: bold">调查结论：</span>
+					<span class="sellconclusion-text" id="serviceReasonDetailDesc">XXXXXXXXX超市首页>管材 >软连接管材 >燃气输送用波纹软管（GB/T26002）>燃气输送波纹管_RSB-II F-10_不锈钢管_RSB-II F-10_不锈钢管_RSB-II F-10_不锈钢管_RSB-II F-10_不锈钢管_RSB-II F-10_不锈钢</span>
+				</div>
+		    </div>
+		    <div class="fr clearfix pt10 pd10 ep-bottom" id="templateFooterContent" style="display:none">
+
+                <div class="eb-top " style="width:100%;">
+                    <p class="et-customerName">打印时间：<span id="printDate"></span></p>
+                    <!--<p class="et-inventoryName"><span class="print-page__span print-page__span&#45;&#45;two" id="printPage"></span>/ <span id="printTotalPage"></span>	页</p>-->
+                </div>
+            </div>
+
+	    </div>
+</div>
+	<div class="ep-print" style="margin-top: 80px;text-align: center;">
+		<button id="printOrder" class="printBtn" style="  width: 80px;height: 30px; background: #f14400;color: #fff;">打印售后单</button>
+	</div>
+	</div>
+<style>
+
+	*{color: #333333;font-family: 微软雅黑}
+	body{min-width:auto}
+	.clonePrintContent {display:none}
+	.top{font-size:16px;width: 1000px;height: 55px;border-bottom: 1px solid #D1E8F2; line-height:65px;color: #0399CC;font-weight: bold}
+	.title{width: 1000px;height: 60px;text-align: center;font-size: 18px;  color: #333333;border-bottom: 1px solid #DEEFFB;line-height: 85px}
+	/*.culom1{min-width: 280px;margin-top: 5%;height:124px;float: left}*/
+	.culom1{width: 280px;margin-top: 5%;height:124px;float: left}
+	.culom1 p{width: 100%;/*height: 30px;*/display: block}
+	.data{color: #151515;/* float: left*/}
+	.name{color: #000000;;min-width: 60px;text-align: right;height: 22px;/*display: block;float: left;*/font-weight: bold }
+	table{width:1000px;}
+	table th{height: 45px;font-weight: bold;border-top: 1px dashed #DEEFFB;}
+	table tr{height: 40px;border-bottom: 1px dashed #DEEFFB;width: 100% }
+
+	.chuku,.cancel{background: #0399CC;;  border:none;border-radius: 3px;width: 70px;height: 33px;margin-left: 20px;cursor: pointer;font-family: 微软雅黑;color: white}
+	.chuku:hover{color: #fff;background: #6CC6DA;}
+	.cancel{background: #FFFFFF;  border: 1px solid #CBCED0;color: #333333;margin-left: 20px}
+	.cancel:hover{border: 1px solid #6CC6DA;}
+
+	.bigPrint {margin:0 auto;width:840px;}
+	.
+	.en-printAfter {display:none}
+
+	.en-printOrder { color: #333; width:840px; -height: 431px; background: white; margin: 0 auto; }
+
+	.en-printOrder .printTit { padding: 15px 0; }
+
+	.en-printOrder .printTit h2 { font-family: 'Microsoft YaHei'; font-size: 16px; color: #0399CC; height: 16px; line-height: 16px; width: 140px; border-right: 1px solid #E6E6E6; }
+
+	.en-printOrder .ep-pup { page-break-after:always;width: 100%; margin: 0 auto; -padding-top: 30px; -height: 401px; position: relative; }
+
+	.en-printOrder .ep-pup .ep-title { font: 18px/18px "Microsoft YaHei"; color: #000; margin-bottom: 0; text-align: center; width: 100%; border-bottom: 1px solid #DEEFFB; padding: 25px 0 6px 0; }
+
+	.en-printOrder .ep-pup .ep-ListInfo { width: 100%; margin-bottom: 18px; }
+
+	.en-printOrder .ep-pup .ep-ListInfo ul { width: 100%; margin-top: 24px;  }
+
+	.en-printOrder .ep-pup .ep-ListInfo ul li { width: 33.33%; float: left; font: 12px/12px "Microsoft YaHei"; padding-bottom: 15px; }
+
+	.en-printOrder .ep-pup .ep-ListInfo ul li .pu-a { font-size: 12px; color: #999; line-height: 12px; }
+
+	.en-printOrder .ep-pup .ep-main { width: 100%;  }
+
+	.en-printOrder .ep-pup .ep-main .tl { text-align: left; width: auto; padding-left: 20px; }
+
+	.en-printOrder .ep-pup .ep-main .tr { text-align: right; width: auto; padding-right: 20px; }
+
+	.en-printOrder .ep-pup .ep-main th { height: 40px; text-align: center; border-bottom: 1px solid #000;border: 1px solid #000;  }
+
+	.en-printOrder .ep-pup .ep-main td { height: 40px; text-align: center; border: 1px solid #000;padding: 10px }
+
+	.en-printOrder .ep-pup .ep-main .em-borderL { border-left: 1px solid #000; }
+
+	.en-printOrder .ep-pup .ep-main .em-ow0 { width: 30px; }
+
+	.en-printOrder .ep-pup .ep-main .em-ow1 { width: 55px; }
+
+	.en-printOrder .ep-pup .ep-main .em-ow2 { width: 60px; }
+
+	.en-printOrder .ep-pup .ep-main .em-ow3 { width: 180px; }
+
+	.en-printOrder .ep-pup .ep-main .em-ow4 { width: 360px; }
+
+	.en-printOrder .ep-pup .ep-bottom {  font: 12px/16px "Microsoft YaHei";width: 100% }
+
+	/*.en-printOrder .ep-pup .ep-bottom .print-page__span { width: 40px !important; display: inline-block;text-align: center; }*/
+
+	.en-printOrder .ep-pup .ep-bottom .eb-top { padding-bottom: 10px;}
+
+	.en-printOrder .ep-pup .ep-bottom .eb-bottom .et-printTime { width: 243px; float: right; }
+
+	.ep-print { width: 1020px;margin:0 auto; text-align: center; }
+
+	.ep-print .tabPrice { text-align: right; }
+
+	.ep-print .tabPrice label { margin-right: 20px; cursor: pointer; }
+
+	.ep-print .tabPrice label input { position: relative; top: 2px; }
+
+	.ep-print a { background: #0399CC; border-radius: 2px; width: 85px; height: 32px; line-height: 32px; color: white; text-align: center; margin-top: 40px; display: inline-block; }
+	table td{word-break: break-all;}
+
+	.et-inventoryName1{
+		width:100px;padding-left:170px;
+	}
+	.et-inventoryName{
+		float:right;
+		width:40px;
+	}
+	.et-customerName{
+		width:225px;
+		float:left;
+	}
+	.company{
+		height: 30px;
+		display: inline-block;
+		float: left;
+		margin-left: 30px;
+		line-height: 30px;
+	}
+	.sellDetail{
+		width: 30%;
+		height: 30px;
+		float: right;
+
+	}
+	.sellremark,.sellProblem,.sellconclusion{
+		width: 100%;
+		color: #000000;
+	}
+	.main-table{
+		border: 1px solid #000000;
+	}
+	.sellremark-text{
+
+	}
+</style>
+</body>
+</html>

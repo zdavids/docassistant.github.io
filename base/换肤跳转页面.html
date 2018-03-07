@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--换肤说明-->
+    <!--给要换肤的link或script标签加上两个属性-->
+    <!--1. class="changeSkin"-->
+    <!--2. skinname = "blue" blue 是src或者href中要替换的肤色字符串，如blue，orange，Blue，Orange-->
+    <link rel="stylesheet" href="./css/base_blue.css" class="changeSkin" skinname="blue">
+    <script src="./js/jquery.js"></script>
+    <script src="../plugin/WdatePickerBlue/My97DatePicker/WdatePicker.js" class="changeSkin" skinname="Blue"></script>
+    <script src="./js/common_opt.js"></script>
+
+</head>
+<body>
+<button type="button"  changeThemeTo="blue" class="change-skin" style="background-color: #00a1ff;color:#fff;width:100px;height:30px;border-radius: 5px;line-height: 30px;position: fixed;top:40%;right:0;z-index: 1000;">换肤</button>
+<button type="button"  changeThemeTo="orange" class="change-skin" style="background-color:#f14400;color:#fff;width:100px;height:30px;border-radius: 5px;line-height: 30px;position: fixed;top:60%;right:0;z-index: 1000;">换肤</button>
+<p class="bg-main" style="margin:50px auto; text-align: center;">
+    <a href="./换肤操作.html" style="font-size :16px;color:#fff;">换肤操作页面</a>
+</p>
+</body>
+</html>
